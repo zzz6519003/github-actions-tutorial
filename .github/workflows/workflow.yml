@@ -53,43 +53,43 @@ jobs:
           tag_with_sha: true # sha-${GITHUB_SHA::7}
 
   # Deploy to Kubernetes.
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    needs:
-      - run-tests
-      - build-and-release
-    steps:
-      # Check out source code.
-      - name: Check out source code
-        uses: actions/checkout@v2
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'refs/heads/master'
+  #   needs:
+  #     - run-tests
+  #     - build-and-release
+  #   steps:
+  #     # Check out source code.
+  #     - name: Check out source code
+  #       uses: actions/checkout@v2
 
-      # Set up kubectl.
-      - name: Set up kubectl
-        run: |-
-          curl -sfLo kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl
-          chmod +x kubectl
-          sudo mv kubectl /usr/local/bin/
+  #     # Set up kubectl.
+  #     - name: Set up kubectl
+  #       run: |-
+  #         curl -sfLo kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl
+  #         chmod +x kubectl
+  #         sudo mv kubectl /usr/local/bin/
 
-      # Configure kubectl.
-      - name: Configure kubectl
-        run: echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yml
+  #     # Configure kubectl.
+  #     - name: Configure kubectl
+  #       run: echo "${{ secrets.KUBECONFIG }}" | base64 --decode > kubeconfig.yml
 
-      # Set up Kustomize.
-      - name: Set up Kustomize
-        run: |-
-          curl -sfL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz | tar -xzf -
-          sudo mv kustomize /usr/local/bin/
+  #     # Set up Kustomize.
+  #     - name: Set up Kustomize
+  #       run: |-
+  #         curl -sfL https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz | tar -xzf -
+  #         sudo mv kustomize /usr/local/bin/
 
-      # Kustomize Kubernetes resources.
-      - name: Kustomize Kubernetes resources
-        working-directory: ./manifests
-        run: kustomize edit set image REPOSITORY:TAG=${IMAGE_REPOSITORY}:sha-${GITHUB_SHA::7}
+  #     # Kustomize Kubernetes resources.
+  #     - name: Kustomize Kubernetes resources
+  #       working-directory: ./manifests
+  #       run: kustomize edit set image REPOSITORY:TAG=${IMAGE_REPOSITORY}:sha-${GITHUB_SHA::7}
 
-      # Deploy to Kubernetes.
-      - name: Deploy to Kubernetes
-        run: kubectl --kubeconfig kubeconfig.yml apply --kustomize manifests/
+  #     # Deploy to Kubernetes.
+  #     - name: Deploy to Kubernetes
+  #       run: kubectl --kubeconfig kubeconfig.yml apply --kustomize manifests/
 
-      # Validate deployment.
-      - name: Validate deployment
-        run: kubectl --kubeconfig kubeconfig.yml rollout status --timeout 120s deployment/foobar
+  #     # Validate deployment.
+  #     - name: Validate deployment
+  #       run: kubectl --kubeconfig kubeconfig.yml rollout status --timeout 120s deployment/foobar
