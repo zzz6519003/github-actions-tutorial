@@ -1,4 +1,5 @@
 # Github Actions tutorial
+[![main-worklfow](https://github.com/zzz6519003/github-actions-tutorial/actions/workflows/workflow.yml/badge.svg)](https://github.com/zzz6519003/github-actions-tutorial/actions/workflows/workflow.yml)
 
 This tutorial will guide you through building a functional CI/CD pipeline with
 Github Actions. You will create a workflow that automatically runs unit tests on
